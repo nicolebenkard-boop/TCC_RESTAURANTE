@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-header-dark: #2a080a;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --accent-red: #a91d22;
+    --accent-hover: #cb2026;
+    --accent-light: #fef2f2;
+    --border-color: #cbd5e1;
+    
+    /* Cores Técnicas dos Objetos da Planta */
+    --color-wall: #1e293b;
+    --color-inox: #e2e8f0;
+    --color-inox-dark: #94a3b8;
+    --color-burner: #475569;
+    --color-water: #38bdf8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f1f5f9;
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-top: 90px;
+}
+
+/* Faixa decorativa superior em degradê vinho idêntica ao print */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 360px;
+    background: linear-gradient(135deg, #470a0c 0%, #801418 50%, #a91d22 100%);
+    z-index: -1;
+}
+
+/* Top Bar */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background: #1f0506;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand span {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.engine-tag {
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: #fca5a5;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+}
+
+.top-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Container Grid Principal */
+.container {
+    max-width: 1550px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+}
+
+.card-box {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    margin-bottom: 20px;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.card-box h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2d0608;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.card-box h2 i {
+    color: var(--accent-red);
+    font-size: 1.1rem;
+}
+
+.subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.actions-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn {
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn:active { transform: scale(0.98); }
+.w-full { width: 100%; }
+
+.btn-primary {
+    background: #200405;
+    color: #ffffff;
+}
+.btn-primary:hover { background: #380a0d; }
+
+.btn-success {
+    background: var(--accent-red);
+    color: #ffffff;
+}
+.btn-success:hover { background: var(--accent-hover); }
+
+.form-save {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-save input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+.form-save input:focus {
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+/* Lista de Histórico */
+.layouts-history-list {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid var(--accent-red);
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.history-item .proj-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 2px;
+}
+
+.history-item .proj-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Área da Planta Técnica */
+.blueprint-card {
+    padding: 20px;
+}
+
+.blueprint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 12px;
+}
+
+.legend-pills {
+    display: flex;
+    gap: 14px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #475569;
+}
+
+.pill .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.pill-hot .dot { background-color: #ef4444; }
+.pill-prep .dot { background-color: #f59e0b; }
+.pill-cold .dot { background-color: #3b82f6; }
+.pill-wash .dot { background-color: #10b981; }
+
+.tech-version-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent-red);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+/* Canvas Dinâmico Quadriculado */
+.blueprint-canvas-wrapper {
+    background: #ffffff;
+    background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+    background-size: 25px 25px;
+    border: 2px solid #94a3b8;
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.svg-engine {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Renderização dos Módulos da Planta Baixa */
+.wall-exterior { fill: none; stroke: var(--color-wall); stroke-width: 6; stroke-linejoin: round; }
+.room-floor { fill: #f8fafc; }
+.object-inox { fill: var(--color-inox); stroke: var(--color-inox-dark); stroke-width: 1.5; }
+.object-burner { fill: var(--color-burner); }
+.object-sink { fill: var(--color-water); opacity: 0.7; stroke: var(--color-inox-dark); stroke-width: 1; }
+.object-fridge { fill: #e0f2fe; stroke: #0284c7; stroke-width: 1.5; }
+
+.label-obj { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; fill: #334155; text-anchor: middle; }
+.label-zone { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; fill: var(--accent-red); text-anchor: middle; opacity: 0.4; }
+.dimension-line { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 2,2; }
+.dimension-text { font-family: 'JetBrains Mono', monospace; font-size: 8px; fill: #64748b; text-anchor: middle; }
+
+/* Card Diagnóstico */
+.analysis-card {
+    background: #fffcfc;
+    border-left: 4px solid var(--accent-red);
+}
+
+.analysis-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.icon-avatar-analysis {
+    color: var(--accent-red);
+    font-size: 1.2rem;
+}
+
+.analysis-card h3 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    letter-spacing: 0.5px;
+}
+
+.analysis-text {
+    color: #334155;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Correção do Histórico Interativo com Lixeira */
+.history-item a {
+    color: inherit;
+}
+.history-item a:hover .proj-name {
+    color: var(--accent-red);
+}
+.history-item a:last-child:hover {
+    color: #b91c1c !important;
+}

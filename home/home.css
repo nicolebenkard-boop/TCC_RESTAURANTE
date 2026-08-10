@@ -1,0 +1,212 @@
+/* Configurações de Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    color: #ffffff;
+    position: relative;
+    overflow-x: hidden;
+    background-color: #111; /* Cor de segurança caso a imagem demore a carregar */
+}
+
+/* Imagem de Fundo Meio Apagada e Escura */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Substitua pela foto do seu restaurante se preferir */
+    background-image: url('fundo.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.25) blur(3px); /* Deixa a imagem escura e levemente borrada */
+    z-index: -1;
+}
+
+/* Container de Conteúdo Principal */
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Barra Superior (Header) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px); /* Efeito de vidro jateado fino */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.brand span {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s ease;
+}
+
+.top-link:hover {
+    color: #ffffff;
+}
+
+/* Destaque para o botão de Assinatura */
+.top-link.premium {
+    background-color: #780c0c; /* Vermelho base da sua marca */
+    padding: 6px 14px;
+    border-radius: 15px;
+    color: #fff;
+}
+
+.top-link.premium:hover {
+    background-color: #a31414;
+}
+
+.top-link.logout:hover {
+    color: #ff4d4d;
+}
+
+/* Área de Conteúdo Central */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.welcome-text {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.welcome-text h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.welcome-text p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Grade de Módulos (Botões) */
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 180px); /* 4 colunas no desktop */
+    gap: 25px;
+    justify-content: center;
+    max-width: 900px;
+}
+
+/* Estilização Individual de Cada Botão/Card */
+.mod-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 25px 15px;
+    text-align: center;
+    text-decoration: none;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Efeito de passar o mouse: Brilha na cor vermelha da marca */
+.mod-card:hover {
+    background: rgba(120, 12, 12, 0.25);
+    border-color: #780c0c;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(120, 12, 12, 0.3);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    transition: all 0.3s ease;
+}
+
+.mod-card:hover .icon-box {
+    background: #780c0c;
+    transform: scale(1.1);
+}
+
+.mod-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* Responsividade (Telas menores e Mobile) */
+@media (max-width: 850px) {
+    .modules-grid {
+        grid-template-columns: repeat(3, 170px); /* 3 colunas em tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .top-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .modules-grid {
+        grid-template-columns: repeat(2, 150px); /* 2 colunas em celulares */
+        gap: 15px;
+    }
+
+    .welcome-text h1 {
+        font-size: 2rem;
+    }
+}

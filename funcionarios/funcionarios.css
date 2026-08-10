@@ -1,0 +1,322 @@
+/* Reset Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    color: #ffffff;
+    background-color: #111;
+}
+
+/* Fundo Desfocado com a imagem padrão do sistema */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1600');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.2) blur(4px);
+    z-index: -1;
+}
+
+/* Header */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-logo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.brand span {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.top-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: background 0.3s;
+}
+
+.top-link:hover {
+    background: #780c0c;
+}
+
+/* Layout Container (Dividido em duas partes) */
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 30px;
+}
+
+/* Caixas Estilizadas (Cards) */
+.card-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(8px);
+}
+
+.card-box h2 {
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 25px;
+}
+
+/* Formulário Interno */
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #780c0c;
+}
+
+/* Lista de Funcionários */
+.func-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.func-item {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.func-item:hover {
+    transform: translateX(3px);
+    border-color: rgba(120, 12, 12, 0.4);
+}
+
+.func-info-basic {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.7);
+}
+
+.func-info-basic h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.func-info-basic p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+}
+
+/* Botões */
+.btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.btn-primary {
+    background: #780c0c;
+    color: #fff;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background: #a31414;
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-secondary:hover {
+    background: #fff;
+    color: #111;
+}
+
+.btn-danger {
+    background: #9c1c1c;
+    color: #fff;
+    display: inline-block;
+}
+
+.btn-danger:hover {
+    background: #d92b2b;
+}
+
+.empty-msg {
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    padding: 40px 0;
+}
+
+/* DESIGN DO MODAL (ESTILO OVERLAY POP-UP) */
+.modal {
+    display: none; /* Escondido por padrão, alterado via JS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1e1e1e;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    color: #fff;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #ff4d4d;
+}
+
+.modal-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+}
+
+.modal-divider {
+    border: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin-bottom: 20px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.modal-body strong {
+    color: rgba(255,255,255,0.6);
+}
+
+.modal-body span {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Responsividade Básica */
+@media (max-width: 820px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}

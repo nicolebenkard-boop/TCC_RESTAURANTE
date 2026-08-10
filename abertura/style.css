@@ -1,0 +1,291 @@
+/* =========================================================
+   RESTCONTROL - ESTILOS E DESIGN PROFISSIONAL
+   ========================================================= */
+
+:root {
+    --primary-color: #8B0000;
+    --primary-hover: #a80000;
+    --accent-color: #D4AF37;
+    --bg-light: #FAF7F2;
+    --text-dark: #1F1F1F;
+    --text-muted: #555555;
+    --font-heading: 'Cinzel', Georgia, serif;
+    --font-body: 'Poppins', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* CABEÇALHO */
+.main-header {
+    background: linear-gradient(135deg, #121212 0%, #2b0000 100%);
+    color: #ffffff;
+    padding: 45px 20px;
+    text-align: center;
+    border-bottom: 4px solid var(--accent-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.brand-logo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-color);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.brand-title {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    letter-spacing: 3px;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.brand-tagline {
+    font-size: 1.15rem;
+    color: var(--accent-color);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* INTRODUÇÃO */
+.intro-section {
+    padding: 70px 0;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.section-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background-color: rgba(139, 0, 0, 0.08);
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+}
+
+.intro-section h2 {
+    font-family: var(--font-heading);
+    font-size: 2.1rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.divider {
+    width: 80px;
+    height: 3px;
+    background: var(--accent-color);
+    margin: 0 auto 25px auto;
+}
+
+.lead-text {
+    font-size: 1.2rem;
+    color: #333333;
+    max-width: 850px;
+    margin: 0 auto 20px auto;
+}
+
+.description-text {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 850px;
+    margin: 0 auto;
+    text-align: justify;
+}
+
+/* SEÇÃO BANNER DE TELA CHEIA (inicio.png) */
+.banner-section {
+    width: 100%;
+    background-color: #0f0f0f;
+    padding: 40px 0 50px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+.banner-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 15px;
+    text-align: center;
+}
+
+.full-banner-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* BOTÕES DE CHAMADA PARA AÇÃO (CTA) */
+.cta-container {
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.btn-cta {
+    display: inline-block;
+    background: linear-gradient(135deg, #8B0000 0%, #B22222 100%);
+    color: #ffffff;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 18px 48px;
+    border-radius: 50px;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    letter-spacing: 1.5px;
+    cursor: pointer;
+}
+
+.btn-cta:hover {
+    background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+    color: #121212;
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.6);
+    border-color: #ffffff;
+}
+
+/* BOTÃO SECUNDÁRIO - LOGIN */
+.btn-login {
+    display: inline-block;
+    background: transparent;
+    color: var(--accent-color);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 32px;
+    border-radius: 50px;
+    border: 2px solid var(--accent-color);
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.btn-login:hover {
+    background-color: var(--accent-color);
+    color: #121212;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+/* DETALHES */
+.details-section {
+    padding: 70px 0;
+    background-color: var(--bg-light);
+}
+
+.text-block h2 {
+    font-family: var(--font-heading);
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.text-block p {
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.benefit-list {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.benefit-list li {
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.benefit-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+/* FOOTER */
+.main-footer {
+    background-color: #121212;
+    color: #888888;
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid #222222;
+}
+
+.footer-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 1px solid var(--accent-color);
+}
+
+.footer-title {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+}
+
+.footer-copy {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .brand-title { font-size: 2.2rem; }
+    .intro-section h2 { font-size: 1.6rem; }
+    .btn-cta { 
+        font-size: 1.1rem; 
+        padding: 14px 32px; 
+        width: 90%;
+    }
+    .btn-login {
+        font-size: 0.95rem;
+        padding: 10px 24px;
+        width: 90%;
+    }
+}
