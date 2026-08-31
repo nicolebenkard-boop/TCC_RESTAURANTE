@@ -90,6 +90,36 @@ body {
     margin-bottom: 30px;
 }
 
+/* Checkbox "Sou funcionário" */
+.funcionario-check-row {
+    margin-bottom: 4px;
+}
+
+.checkbox-funcionario {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    cursor: pointer;
+}
+
+.checkbox-funcionario input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #780c0c;
+    cursor: pointer;
+}
+
+.hint-funcionario {
+    margin-top: 4px;
+    margin-bottom: 20px;
+    font-size: 0.78rem;
+    color: #780c0c;
+    line-height: 1.4;
+}
+
 /* Inputs e Grupos */
 .input-group {
     margin-bottom: 20px;

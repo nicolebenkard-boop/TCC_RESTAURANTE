@@ -23,12 +23,12 @@
                 <h2>Acessar Conta</h2>
                 <p class="subtitle">Insira suas credenciais abaixo</p>
 
-                <form action="../home/home.php" method="POST" id="loginForm">
+                <form action="login_processa.php" method="POST" id="loginForm">
                     <div class="input-group">
-                        <label for="email">E-mail ou Usuário</label>
+                        <label for="identificador" id="labelIdentificador">E-mail</label>
                         <div class="input-field">
-                            <i class="fa-regular fa-envelope"></i>
-                            <input type="email" id="email" name="email" placeholder="Ex: gestor@restcontrol.com" required>
+                            <i class="fa-regular fa-envelope" id="iconIdentificador"></i>
+                            <input type="text" id="identificador" name="identificador" placeholder="Ex: gestor@restcontrol.com" required>
                         </div>
                     </div>
 
@@ -41,12 +41,20 @@
                         </div>
                     </div>
 
+                    <div class="form-options funcionario-check-row">
+                        <label class="checkbox-funcionario">
+                            <input type="checkbox" name="funcionario" id="chkFuncionario" value="1">
+                            Sou funcionário
+                        </label>
+                    </div>
+
+                
                     <div class="form-options">
                         <a href="#" class="forgot-password">Esqueceu a senha?</a>
                     </div>
 
                     <div class="button-group">
-                        <a href="../home/home.php" class="btn btn-primary" style="display: block; text-decoration: none;">Entrar</a>
+                        <button type="submit" class="btn btn-primary">Entrar</button>
                         <a href="../abertura/index.php" class="btn btn-secondary">Voltar</a>
                     </div>
                 </form>

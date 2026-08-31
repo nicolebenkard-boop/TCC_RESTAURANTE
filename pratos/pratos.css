@@ -56,21 +56,12 @@ body {
 
 /* Container Estrutural */
 .container-dashboard {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 40px auto;
     padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 30px;
 }
 
-@media (max-width: 768px) {
-    .container-dashboard {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Card Genérico */
+/* Card do cabeçalho */
 .card-box {
     background: rgba(20, 20, 20, 0.6);
     backdrop-filter: blur(12px);
@@ -80,77 +71,99 @@ body {
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
-.form-section .header-section h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #fff;
-}
-
-.form-section .header-section p {
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.5;
-    margin-bottom: 25px;
-}
-
-/* Seção de Listagem */
-.list-section h2 {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 10px;
-}
-
-.func-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-height: 500px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-
-.func-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 15px 20px;
-    border-radius: 10px;
+.header-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.header-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.header-section p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+}
+
+/* Grid de pratos - cards grandes */
+.pratos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.prato-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     transition: transform 0.2s, border-color 0.2s;
-}
-
-.func-item:hover {
-    transform: translateX(3px);
-    border-color: rgba(120, 12, 12, 0.4);
-}
-
-.func-info-basic {
     display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column;
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
+.prato-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(120, 12, 12, 0.5);
+}
+
+.prato-imagem {
+    width: 100%;
+    height: 220px;
+    background: rgba(255,255,255,0.03);
+}
+
+.prato-imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sem-imagem {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255,255,255,0.7);
+    font-size: 3.5rem;
+    color: rgba(255,255,255,0.15);
 }
 
-.func-info-basic h3 {
-    font-size: 1.05rem;
-    font-weight: 600;
+.prato-info {
+    padding: 20px 20px 10px;
 }
 
-.func-info-basic p {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
+.prato-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+}
+
+.prato-preco {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e05555;
+}
+
+.prato-acoes {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px 20px;
+    margin-top: auto;
+}
+
+.prato-acoes .btn {
+    flex: 1;
+    justify-content: center;
 }
 
 /* Botões */
@@ -177,6 +190,16 @@ body {
     background: #941313;
 }
 
+.btn-secondary {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.18);
+}
+
 .btn-danger {
     background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
@@ -189,13 +212,14 @@ body {
 }
 
 .empty-msg {
+    grid-column: 1 / -1;
     text-align: center;
     color: rgba(255,255,255,0.4);
     font-size: 0.95rem;
-    padding: 20px;
+    padding: 40px 20px;
 }
 
-/* Design do Modal Pop-up */
+/* Modal Pop-up */
 .modal {
     display: none;
     position: fixed;
@@ -217,6 +241,8 @@ body {
     border-radius: 16px;
     width: 100%;
     max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     color: #fff;
@@ -241,6 +267,16 @@ body {
     color: #fff;
 }
 
+.erro-msg {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ff9d9d;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
 .input-group {
     display: flex;
     flex-direction: column;
@@ -253,7 +289,7 @@ body {
     color: rgba(255,255,255,0.6);
 }
 
-.input-group input {
+.input-group input[type="text"] {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255,255,255,0.1);
     padding: 12px;
@@ -262,9 +298,29 @@ body {
     font-size: 0.95rem;
 }
 
-.input-group input:focus {
+.input-group input[type="text"]:focus {
     outline: none;
     border-color: #780c0c;
+}
+
+.input-group input[type="file"] {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+}
+
+.preview-imagem {
+    margin-top: 10px;
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.dica-campo {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.78rem;
+    margin-top: 4px;
 }
 
 .button-container {

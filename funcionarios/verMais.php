@@ -1,15 +1,14 @@
 <?php
-// Configurações de conexão com o banco de dados
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "restaurante";
+session_start();
+require_once '../conexao.php'; // deve fornecer $pdo (PDO), igual ao login
 
-$conn = new mysqli($host, $usuario, $senha, $banco);
-
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
 }
+
+$id_gestor = $_SESSION['usuario_id'];
 
 // Verifica se recebeu o ID do funcionário pela URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -19,14 +18,16 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id_funcionario = intval($_GET['id']);
 
-// BUSCA OS DADOS DO FUNCIONÁRIO SELECIONADO
-$sql = "SELECT * FROM tb_funcionarios WHERE id_funcionario = $id_funcionario";
-$resultado = $conn->query($sql);
+// BUSCA OS DADOS DO FUNCIONÁRIO SELECIONADO (só se pertencer ao gestor logado)
+$stmt = $pdo->prepare("SELECT * FROM tb_funcionarios WHERE id_funcionario = :id AND id_gestor = :id_gestor");
+$stmt->execute([
+    ':id'        => $id_funcionario,
+    ':id_gestor' => $id_gestor,
+]);
+$funcionario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($resultado && $resultado->num_rows > 0) {
-    $funcionario = $resultado->fetch_assoc();
-} else {
-    // Se o funcionário não for encontrado, volta para a listagem
+if (!$funcionario) {
+    // Não encontrado (ou pertence a outro gestor) -> volta para a listagem
     header("Location: funcionarios.php");
     exit();
 }

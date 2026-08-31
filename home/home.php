@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+// Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
+}
+
+$nome_gestor = htmlspecialchars($_SESSION['usuario_nome']);
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -29,13 +40,13 @@
 
         <main class="main-content">
             <div class="welcome-text">
-                <h1>Olá, Gestor!</h1>
+                <h1>Olá, <?php echo $nome_gestor; ?>!</h1>
                 <p>O que você deseja gerenciar hoje no seu restaurante?</p>
             </div>
 
             <div class="modules-grid">
 
-                <a href="#" class="mod-card">
+                <a href="../ficha_tecnica/ficha.php" class="mod-card">
                     <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
                     <h3>Ficha Técnica</h3>
                 </a>
@@ -75,6 +86,10 @@
                     <h3>Layout</h3>
                 </a>
 
+                <a href="../kanban/kanban.php" class="mod-card">
+                    <div class="icon-box"><i class="fa-solid fa-paint-brush"></i></div>
+                    <h3>Kanban</h3>
+                </a>
 
             </div>
         </main>

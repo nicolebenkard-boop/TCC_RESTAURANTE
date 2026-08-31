@@ -1,54 +1,149 @@
 <?php
 session_start();
+require_once '../conexao.php'; // deve fornecer $pdo (PDO), igual ao login
 
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "restaurante";
-
-$conn = new mysqli($host, $usuario, $senha, $banco);
-
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
 }
 
-// Respeita o padrão que você usou nos outros arquivos para o ID do gestor logado
-$id_gestor = isset($_SESSION['id_gestor']) ? intval($_SESSION['id_gestor']) : 1;
+$id_gestor = $_SESSION['usuario_id'];
 
-// Garante que o gestor padrão existe no banco para evitar erros de FK
-$check_gestor = $conn->query("SELECT id_gestor FROM tb_gestor WHERE id_gestor = $id_gestor");
-if ($check_gestor->num_rows == 0) {
-    $conn->query("INSERT INTO tb_gestor (id_gestor, CNPJ, CPF, nome_gestor, e_mail, senha)
-                VALUES ($id_gestor, '00000000000000', '00000000000', 'Gestor Administrador', 'admin@restcontrol.com', '123456')");
+$UPLOAD_DIR = __DIR__ . '/uploads/';
+$UPLOAD_URL = 'uploads/';
+$EXTENSOES_PERMITIDAS = ['jpg', 'jpeg', 'png', 'webp'];
+$TAMANHO_MAXIMO = 5 * 1024 * 1024; // 5MB
+
+$erro = null;
+
+/**
+ * Trata o upload de imagem enviado no campo "imagem".
+ * Retorna o nome do arquivo salvo, ou null se nenhum arquivo válido foi enviado.
+ */
+function processarUploadImagem($UPLOAD_DIR, $EXTENSOES_PERMITIDAS, $TAMANHO_MAXIMO, &$erro) {
+    if (!isset($_FILES['imagem']) || $_FILES['imagem']['error'] === UPLOAD_ERR_NO_FILE) {
+        return null; // Nenhuma imagem enviada, tudo bem (é opcional)
+    }
+
+    if ($_FILES['imagem']['error'] !== UPLOAD_ERR_OK) {
+        $erro = "Erro ao enviar a imagem.";
+        return null;
+    }
+
+    if ($_FILES['imagem']['size'] > $TAMANHO_MAXIMO) {
+        $erro = "A imagem deve ter no máximo 5MB.";
+        return null;
+    }
+
+    $extensao = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
+    if (!in_array($extensao, $EXTENSOES_PERMITIDAS)) {
+        $erro = "Formato de imagem inválido. Use JPG, PNG ou WEBP.";
+        return null;
+    }
+
+    // Confere se o arquivo é realmente uma imagem (não confia só na extensão)
+    $info = @getimagesize($_FILES['imagem']['tmp_name']);
+    if ($info === false) {
+        $erro = "O arquivo enviado não é uma imagem válida.";
+        return null;
+    }
+
+    $nome_arquivo = 'prato_' . uniqid() . '_' . time() . '.' . $extensao;
+    if (!move_uploaded_file($_FILES['imagem']['tmp_name'], $UPLOAD_DIR . $nome_arquivo)) {
+        $erro = "Não foi possível salvar a imagem no servidor.";
+        return null;
+    }
+
+    return $nome_arquivo;
 }
 
-// LÓGICA 1: Cadastrar Novo Prato
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cadastrar'])) {
-    $nome_prato = $conn->real_escape_string($_POST['nome_prato']);
-    // Converte vírgula para ponto se o usuário digitar no padrão brasileiro (ex: 29,90)
-    $preco_venda = str_replace(',', '.', $_POST['preco_venda']);
-    $preco_venda = floatval($preco_venda);
+// LÓGICA 1: Cadastrar ou Editar Prato
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salvar_prato'])) {
+    $nome_prato  = trim($_POST['nome_prato']);
+    $preco_venda = floatval(str_replace(',', '.', $_POST['preco_venda']));
+    $id_prato_edicao = isset($_POST['id_prato']) ? intval($_POST['id_prato']) : 0;
 
-    $sql = "INSERT INTO tb_pratos (id_gestor, nome_prato, preco_venda) VALUES ($id_gestor, '$nome_prato', $preco_venda)";
-    if ($conn->query($sql)) {
+    $nome_imagem = processarUploadImagem($UPLOAD_DIR, $EXTENSOES_PERMITIDAS, $TAMANHO_MAXIMO, $erro);
+
+    if ($erro === null) {
+        if ($id_prato_edicao > 0) {
+            // EDIÇÃO — confirma que o prato pertence ao gestor logado antes de alterar
+            $stmt = $pdo->prepare("SELECT imagem FROM tb_pratos WHERE id_prato = :id AND id_gestor = :id_gestor");
+            $stmt->execute([':id' => $id_prato_edicao, ':id_gestor' => $id_gestor]);
+            $prato_atual = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($prato_atual) {
+                if ($nome_imagem !== null) {
+                    // Enviou imagem nova: apaga a antiga do disco (se existir)
+                    if (!empty($prato_atual['imagem']) && file_exists($UPLOAD_DIR . $prato_atual['imagem'])) {
+                        @unlink($UPLOAD_DIR . $prato_atual['imagem']);
+                    }
+                    $stmt = $pdo->prepare("UPDATE tb_pratos SET nome_prato = :nome, preco_venda = :preco, imagem = :imagem WHERE id_prato = :id AND id_gestor = :id_gestor");
+                    $stmt->execute([
+                        ':nome'      => $nome_prato,
+                        ':preco'     => $preco_venda,
+                        ':imagem'    => $nome_imagem,
+                        ':id'        => $id_prato_edicao,
+                        ':id_gestor' => $id_gestor,
+                    ]);
+                } else {
+                    // Sem imagem nova: mantém a imagem que já estava salva
+                    $stmt = $pdo->prepare("UPDATE tb_pratos SET nome_prato = :nome, preco_venda = :preco WHERE id_prato = :id AND id_gestor = :id_gestor");
+                    $stmt->execute([
+                        ':nome'      => $nome_prato,
+                        ':preco'     => $preco_venda,
+                        ':id'        => $id_prato_edicao,
+                        ':id_gestor' => $id_gestor,
+                    ]);
+                }
+            }
+        } else {
+            // CADASTRO NOVO
+            $stmt = $pdo->prepare("INSERT INTO tb_pratos (id_gestor, nome_prato, imagem, preco_venda) VALUES (:id_gestor, :nome, :imagem, :preco)");
+            $stmt->execute([
+                ':id_gestor' => $id_gestor,
+                ':nome'      => $nome_prato,
+                ':imagem'    => $nome_imagem,
+                ':preco'     => $preco_venda,
+            ]);
+        }
+
         header("Location: pratos.php");
         exit();
     }
 }
 
-// LÓGICA 2: Excluir Prato diretamente na linha
+// LÓGICA 2: Excluir Prato (só do próprio gestor, e apaga a imagem do disco)
 if (isset($_GET['excluir'])) {
     $id_excluir = intval($_GET['excluir']);
-    $sql_delete = "DELETE FROM tb_pratos WHERE id_prato = $id_excluir AND id_gestor = $id_gestor";
-    if ($conn->query($sql_delete)) {
-        header("Location: pratos.php");
-        exit();
+
+    $stmt = $pdo->prepare("SELECT imagem FROM tb_pratos WHERE id_prato = :id AND id_gestor = :id_gestor");
+    $stmt->execute([':id' => $id_excluir, ':id_gestor' => $id_gestor]);
+    $prato = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($prato) {
+        if (!empty($prato['imagem']) && file_exists($UPLOAD_DIR . $prato['imagem'])) {
+            @unlink($UPLOAD_DIR . $prato['imagem']);
+        }
+        // Remove também os itens de ficha técnica ligados a esse prato
+        // (garante limpeza mesmo se a FK em cascata do sql/alteracoes_pratos_ficha.sql
+        // ainda não tiver sido aplicada no banco)
+        $stmt = $pdo->prepare("DELETE FROM tb_item_ficha_tecnica WHERE id_prato = :id");
+        $stmt->execute([':id' => $id_excluir]);
+
+        $stmt = $pdo->prepare("DELETE FROM tb_pratos WHERE id_prato = :id AND id_gestor = :id_gestor");
+        $stmt->execute([':id' => $id_excluir, ':id_gestor' => $id_gestor]);
     }
+
+    header("Location: pratos.php");
+    exit();
 }
 
 // LÓGICA 3: Buscar Pratos Ativos do Gestor
-$sql_busca = "SELECT id_prato, nome_prato, preco_venda FROM tb_pratos WHERE id_gestor = $id_gestor ORDER BY id_prato DESC";
-$resultado = $conn->query($sql_busca);
+$stmt = $pdo->prepare("SELECT id_prato, nome_prato, imagem, preco_venda FROM tb_pratos WHERE id_gestor = :id_gestor ORDER BY id_prato DESC");
+$stmt->execute([':id_gestor' => $id_gestor]);
+$pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -67,60 +162,81 @@ $resultado = $conn->query($sql_busca);
         <div class="brand">
             <span>RestControl</span>
         </div>
-        <a href="../home/home.php" class="top-link"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
+        <a href="../home/home.php" class="top-link"><i class="fa-solid fa-arrow-left"></i>Voltar ao painel</a>
     </header>
 
     <div class="container-dashboard">
-        <section class="card-box form-section">
+        <section class="card-box header-card">
             <div class="header-section">
                 <h2><i class="fa-solid fa-utensils"></i> Gestão do Cardápio</h2>
-                <p>Adicione novos pratos à sua operação gastronômica e defina os valores de venda.</p>
+                <p>Adicione os pratos e refeições prontas do seu restaurante, com foto e preço de venda.</p>
             </div>
             <button class="btn btn-primary" id="openModalBtn"><i class="fa-solid fa-plus"></i> Novo Prato</button>
         </section>
 
-        <section class="card-box list-section">
-            <h2><i class="fa-solid fa-plate-wheat"></i> Pratos Ativos</h2>
-            <div class="func-list">
-                <?php if ($resultado && $resultado->num_rows > 0): ?>
-                    <?php while($row = $resultado->fetch_assoc()): ?>
-                        <div class="func-item">
-                            <div class="func-info-basic">
-                                <div class="avatar"><i class="fa-solid fa-bowl-food"></i></div>
-                                <div>
-                                    <h3><?php echo htmlspecialchars($row['nome_prato']); ?></h3>
-                                    <p>Preço de Venda: R$ <?php echo number_format($row['preco_venda'], 2, ',', '.'); ?></p>
-                                </div>
-                            </div>
-                            <a href="pratos.php?excluir=<?php echo $row['id_prato']; ?>"
-                            class="btn btn-danger"
-                            onclick="return confirm('Tem certeza que deseja remover o prato \'<?php echo htmlspecialchars($row['nome_prato']); ?>\' do cardápio?')">
-                            <i class="fa-solid fa-trash-can"></i> Excluir
+        <section class="pratos-grid">
+            <?php if ($pratos && count($pratos) > 0): ?>
+                <?php foreach ($pratos as $prato): ?>
+                    <div class="prato-card">
+                        <div class="prato-imagem">
+                            <?php if (!empty($prato['imagem'])): ?>
+                                <img src="<?php echo $UPLOAD_URL . htmlspecialchars($prato['imagem']); ?>" alt="<?php echo htmlspecialchars($prato['nome_prato']); ?>">
+                            <?php else: ?>
+                                <div class="sem-imagem"><i class="fa-solid fa-bowl-food"></i></div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="prato-info">
+                            <h3><?php echo htmlspecialchars($prato['nome_prato']); ?></h3>
+                            <p class="prato-preco">R$ <?php echo number_format($prato['preco_venda'], 2, ',', '.'); ?></p>
+                        </div>
+                        <div class="prato-acoes">
+                            <button type="button"
+                                class="btn btn-secondary btn-editar"
+                                data-id="<?php echo $prato['id_prato']; ?>"
+                                data-nome="<?php echo htmlspecialchars($prato['nome_prato'], ENT_QUOTES); ?>"
+                                data-preco="<?php echo htmlspecialchars($prato['preco_venda'], ENT_QUOTES); ?>">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </button>
+                            <a href="pratos.php?excluir=<?php echo $prato['id_prato']; ?>"
+                               class="btn btn-danger"
+                               onclick="return confirm('Excluir o prato \'<?php echo htmlspecialchars($prato['nome_prato'], ENT_QUOTES); ?>\'? Isso também apaga a ficha técnica dele.')">
+                                <i class="fa-solid fa-trash-can"></i> Excluir
                             </a>
                         </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p class="empty-msg">Nenhum prato registrado no cardápio.</p>
-                <?php endif; ?>
-            </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="empty-msg">Nenhum prato cadastrado ainda. Clique em "Novo Prato" para começar.</p>
+            <?php endif; ?>
         </section>
     </div>
 
     <div class="modal" id="pratoModal">
         <div class="modal-content">
             <span class="close-btn" id="closeModalBtn">&times;</span>
-            <h2>Cadastrar Prato</h2>
-            <form action="pratos.php" method="POST">
+            <h2 id="modalTitulo">Cadastrar Prato</h2>
+            <?php if ($erro): ?>
+                <p class="erro-msg"><?php echo htmlspecialchars($erro); ?></p>
+            <?php endif; ?>
+            <form action="pratos.php" method="POST" enctype="multipart/form-data" id="formPrato">
+                <input type="hidden" name="id_prato" id="id_prato" value="">
+
                 <div class="input-group">
                     <label for="nome_prato">Nome do Prato</label>
                     <input type="text" id="nome_prato" name="nome_prato" placeholder="Ex: Risoto de Alho Poró" required>
                 </div>
                 <div class="input-group">
                     <label for="preco_venda">Preço de Venda (R$)</label>
-                    <input type="text" id="preco_venda" name="preco_venda" placeholder="Ex: 49.90" required>
+                    <input type="text" id="preco_venda" name="preco_venda" placeholder="Ex: 49,90" required>
+                </div>
+                <div class="input-group">
+                    <label for="imagem">Foto do Prato</label>
+                    <input type="file" id="imagem" name="imagem" accept=".jpg,.jpeg,.png,.webp">
+                    <img id="previewImagem" class="preview-imagem" style="display:none;" alt="Pré-visualização">
+                    <small id="dicaEdicao" class="dica-campo" style="display:none;">Deixe em branco para manter a foto atual.</small>
                 </div>
                 <div class="button-container">
-                    <button type="submit" name="cadastrar" class="btn btn-primary">Salvar Prato</button>
+                    <button type="submit" name="salvar_prato" class="btn btn-primary">Salvar Prato</button>
                 </div>
             </form>
         </div>

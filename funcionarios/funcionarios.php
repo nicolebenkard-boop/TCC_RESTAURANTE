@@ -1,59 +1,59 @@
 <?php
-// Configurações de conexão com o banco de dados
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "restaurante";
+session_start();
+require_once '../conexao.php'; // deve fornecer $pdo (PDO), igual ao login
 
-$conn = new mysqli($host, $usuario, $senha, $banco);
-
-// Verifica se houve erro na conexão
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// 1. Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
 }
 
-// CORREÇÃO DEFINITIVA: Usando 'e_mail' exatamente como está no seu banco de dados
-$check_gestor = $conn->query("SELECT id_gestor FROM tb_gestor WHERE id_gestor = 1");
-if ($check_gestor->num_rows == 0) {
-    // Insere o gestor inicial respeitando o nome exato com underline (e_mail)
-    $conn->query("INSERT INTO tb_gestor (id_gestor, CNPJ, CPF, nome_gestor, e_mail, senha)
-                VALUES (1, '00000000000000', '00000000000', 'Gestor Administrador', 'admin@restcontrol.com', '123456')");
-}
+$id_gestor_logado = $_SESSION['usuario_id'];
 
 // LÓGICA 1: Inserir Funcionário (Cadastro)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cadastrar'])) {
-    $nome = $conn->real_escape_string($_POST['nome_completo']);
-    $cpf = $conn->real_escape_string($_POST['cpf_funcionario']);
-    $inicio = $conn->real_escape_string($_POST['inicio_work']);
-    $desempenho = $conn->real_escape_string($_POST['desempenho']);
+    $nome       = trim($_POST['nome_completo']);
+    $cpf        = trim($_POST['cpf_funcionario']);
+    $inicio     = trim($_POST['inicio_work']);
+    $desempenho = trim($_POST['desempenho']);
 
     $sql_insert = "INSERT INTO tb_funcionarios (id_gestor, nome_completo, CPF_funcionario, inicio_trabalho, desempenho)
-                VALUES (1, '$nome', '$cpf', '$inicio', '$desempenho')";
+                   VALUES (:id_gestor, :nome, :cpf, :inicio, :desempenho)";
+    $stmt = $pdo->prepare($sql_insert);
+    $ok = $stmt->execute([
+        ':id_gestor'  => $id_gestor_logado, // usa o gestor da sessão, não valor fixo
+        ':nome'       => $nome,
+        ':cpf'        => $cpf,
+        ':inicio'     => $inicio,
+        ':desempenho' => $desempenho,
+    ]);
 
-    if ($conn->query($sql_insert) === TRUE) {
+    if ($ok) {
         header("Location: funcionarios.php?sucesso=1");
         exit();
     } else {
-        echo "<script>alert('Erro ao cadastrar: " . $conn->error . "');</script>";
+        echo "<script>alert('Erro ao cadastrar funcionário.');</script>";
     }
 }
 
-// LÓGICA 2: Excluir Funcionário
+// LÓGICA 2: Excluir Funcionário (só permite excluir funcionário do próprio gestor)
 if (isset($_GET['excluir'])) {
     $id_excluir = intval($_GET['excluir']);
-    $sql_delete = "DELETE FROM tb_funcionarios WHERE id_funcionario = $id_excluir";
 
-    if ($conn->query($sql_delete) === TRUE) {
-        header("Location: funcionarios.php?excluido=1");
-        exit();
-    } else {
-        echo "<script>alert('Erro ao excluir: " . $conn->error . "');</script>";
-    }
+    $stmt = $pdo->prepare("DELETE FROM tb_funcionarios WHERE id_funcionario = :id AND id_gestor = :id_gestor");
+    $stmt->execute([
+        ':id'        => $id_excluir,
+        ':id_gestor' => $id_gestor_logado,
+    ]);
+
+    header("Location: funcionarios.php?excluido=1");
+    exit();
 }
 
-// LÓGICA 3: Buscar todos os funcionários para a listagem
-$sql_select = "SELECT * FROM tb_funcionarios ORDER BY id_funcionario DESC";
-$resultado = $conn->query($sql_select);
+// LÓGICA 3: Buscar SOMENTE os funcionários do gestor logado
+$stmt = $pdo->prepare("SELECT * FROM tb_funcionarios WHERE id_gestor = :id_gestor ORDER BY id_funcionario DESC");
+$stmt->execute([':id_gestor' => $id_gestor_logado]);
+$resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -114,8 +114,8 @@ $resultado = $conn->query($sql_select);
         <section class="card-box list-section">
             <h2><i class="fa-solid fa-users"></i> Quadro de Funcionários</h2>
             <div class="func-list">
-                <?php if ($resultado && $resultado->num_rows > 0): ?>
-                    <?php while($row = $resultado->fetch_assoc()): ?>
+                <?php if ($resultado && count($resultado) > 0): ?>
+                    <?php foreach ($resultado as $row): ?>
                         <div class="func-item">
                             <div class="func-info-basic">
                                 <div class="avatar"><i class="fa-solid fa-user"></i></div>
@@ -126,7 +126,7 @@ $resultado = $conn->query($sql_select);
                             </div>
                             <a href="verMais.php?id=<?php echo $row['id_funcionario']; ?>" class="btn btn-secondary">Ver Mais</a>
                         </div>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <p class="empty-msg">Nenhum funcionário cadastrado ainda.</p>
                 <?php endif; ?>

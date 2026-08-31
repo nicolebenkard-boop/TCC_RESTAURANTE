@@ -1,0 +1,617 @@
+/* Configurações de Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    color: #ffffff;
+    position: relative;
+    overflow-x: hidden;
+    background-color: #111; /* Cor de segurança caso a imagem demore a carregar */
+}
+
+/* Imagem de Fundo Meio Apagada e Escura (mesma imagem usada na home do gestor) */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../home/fundo.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.25) blur(3px);
+    z-index: -1;
+}
+
+/* Container de Conteúdo Principal */
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Barra Superior (Header) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.brand span {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s ease;
+}
+
+.top-link:hover {
+    color: #ffffff;
+}
+
+.top-link.logout:hover {
+    color: #ff4d4d;
+}
+
+/* Área de Conteúdo Central */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.welcome-text {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.welcome-text h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.welcome-text p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Painel simples com os dados do funcionário (substitui o grid de módulos do gestor) */
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Formulário de troca de senha */
+.senha-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(6px);
+}
+
+.icon-box-grande {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #780c0c;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 20px;
+}
+
+.senha-card h1 {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+}
+
+.senha-card .subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+}
+
+.senha-card .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.senha-card .input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 8px;
+}
+
+.senha-card .input-field {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+    padding: 8px 4px;
+    transition: border-color 0.3s ease;
+}
+
+.senha-card .input-field i {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 10px;
+    font-size: 1.05rem;
+}
+
+.senha-card .input-field input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    color: #ffffff;
+    background: transparent;
+    padding: 4px 0;
+}
+
+.senha-card .input-field input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.senha-card .input-field:focus-within {
+    border-color: #d94c4c;
+}
+
+.senha-card .input-field:focus-within i {
+    color: #d94c4c;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid #780c0c;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #780c0c;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #a31414;
+    border-color: #a31414;
+}
+
+.alerta-erro {
+    background-color: rgba(255, 77, 77, 0.15);
+    border: 1px solid rgba(255, 77, 77, 0.4);
+    color: #ffb3b3;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .top-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .welcome-text h1 {
+        font-size: 2rem;
+    }
+
+    .senha-card {
+        padding: 28px;
+    }
+}
+
+/* ==============================
+   PERFIL DO FUNCIONÁRIO
+   ============================== */
+.profile-area {
+    position: relative;
+}
+
+.profile-button {
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    border-radius: 30px;
+    padding: 7px 12px 7px 7px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font: inherit;
+    transition: .25s ease;
+}
+
+.profile-button:hover,
+.profile-button[aria-expanded="true"] {
+    background: rgba(255,255,255,.14);
+    border-color: rgba(255,255,255,.24);
+}
+
+.profile-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #780c0c;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.profile-avatar-large {
+    width: 52px;
+    height: 52px;
+    font-size: 1.15rem;
+}
+
+.profile-name {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.profile-chevron {
+    font-size: .72rem;
+    opacity: .7;
+    transition: transform .2s ease;
+}
+
+.profile-button[aria-expanded="true"] .profile-chevron {
+    transform: rotate(180deg);
+}
+
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 285px;
+    padding: 9px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 16px;
+    background: rgba(22,22,22,.94);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 18px 45px rgba(0,0,0,.45);
+    z-index: 50;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(.98);
+    transform-origin: top right;
+    transition: .2s ease;
+}
+
+.profile-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.profile-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 9px 13px;
+}
+
+.profile-menu-header strong,
+.profile-menu-header small {
+    display: block;
+}
+
+.profile-menu-header strong {
+    font-size: .9rem;
+}
+
+.profile-menu-header small {
+    margin-top: 3px;
+    color: rgba(255,255,255,.55);
+    font-size: .76rem;
+}
+
+.profile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 10px;
+    color: rgba(255,255,255,.85);
+    text-decoration: none;
+    font-size: .87rem;
+    transition: .2s ease;
+}
+
+.profile-menu-item i {
+    width: 18px;
+    text-align: center;
+    color: rgba(255,255,255,.62);
+}
+
+.profile-menu-item:hover {
+    background: rgba(255,255,255,.09);
+    color: #fff;
+}
+
+.profile-menu-item:hover i {
+    color: #fff;
+}
+
+.profile-divider {
+    height: 1px;
+    background: rgba(255,255,255,.1);
+    margin: 7px 5px;
+}
+
+.profile-menu-item.logout-item:hover,
+.profile-menu-item.logout-item:hover i {
+    color: #ff7777;
+}
+
+.profile-page {
+    justify-content: flex-start;
+    padding-top: 55px;
+}
+
+.profile-card {
+    width: 100%;
+    max-width: 700px;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    box-shadow: 0 15px 35px rgba(0,0,0,.25);
+    backdrop-filter: blur(8px);
+}
+
+.profile-card-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.profile-card-title h1 {
+    font-size: 1.65rem;
+    margin-bottom: 4px;
+}
+
+.profile-card-title p {
+    color: rgba(255,255,255,.62);
+    font-size: .88rem;
+}
+
+.profile-section {
+    padding: 20px 0;
+    border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.profile-section h2 {
+    font-size: 1rem;
+    margin-bottom: 17px;
+}
+
+.profile-section h2 i {
+    margin-right: 8px;
+    color: rgba(255,255,255,.68);
+}
+
+.profile-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.profile-data-grid > div {
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(0,0,0,.16);
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+.profile-data-grid span,
+.profile-data-grid strong {
+    display: block;
+}
+
+.profile-data-grid span {
+    color: rgba(255,255,255,.52);
+    font-size: .74rem;
+    margin-bottom: 6px;
+}
+
+.profile-data-grid strong {
+    font-size: .88rem;
+}
+
+.manager-box {
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    padding: 15px;
+    border-radius: 13px;
+    background: rgba(0,0,0,.16);
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+.manager-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(120,12,12,.8);
+}
+
+.manager-box strong,
+.manager-box span {
+    display: block;
+}
+
+.manager-box strong { font-size: .92rem; }
+.manager-box span { color: rgba(255,255,255,.58); font-size: .78rem; margin-top: 3px; }
+
+.subscription-status {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 11px;
+    background: rgba(45,150,80,.12);
+    border: 1px solid rgba(100,220,130,.18);
+}
+
+.subscription-status > i { margin-top: 2px; }
+.subscription-status strong,
+.subscription-status span { display: block; }
+.subscription-status strong { font-size: .82rem; }
+.subscription-status span { color: rgba(255,255,255,.58); font-size: .76rem; margin-top: 3px; }
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-secondary-profile {
+    background: rgba(255,255,255,.07);
+    color: #fff;
+    border-color: rgba(255,255,255,.18);
+}
+
+.btn-secondary-profile:hover {
+    background: rgba(255,255,255,.13);
+}
+
+.settings-card { max-width: 620px; }
+
+.settings-row {
+    display: grid;
+    grid-template-columns: 42px 1fr 15px;
+    align-items: center;
+    gap: 13px;
+    padding: 14px 8px;
+    color: #fff;
+    text-decoration: none;
+    border-top: 1px solid rgba(255,255,255,.1);
+    transition: .2s ease;
+}
+
+.settings-row:hover { background: rgba(255,255,255,.05); }
+.settings-row-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.08);
+}
+.settings-row strong,
+.settings-row small { display: block; }
+.settings-row strong { font-size: .87rem; }
+.settings-row small { color: rgba(255,255,255,.55); font-size: .75rem; margin-top: 3px; }
+.settings-row > i { color: rgba(255,255,255,.45); font-size: .75rem; }
+
+@media (max-width: 600px) {
+    .profile-name { display: none; }
+    .profile-menu { width: min(285px, calc(100vw - 30px)); right: -5px; }
+    .profile-card { padding: 22px; }
+    .profile-data-grid { grid-template-columns: 1fr; }
+    .profile-actions { flex-direction: column; }
+}
+
+

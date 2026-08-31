@@ -1,51 +1,57 @@
 <?php
 // estoque.php - Módulo de Estoque RestControl
 session_start();
+require_once '../conexao.php'; // deve fornecer $pdo (PDO), igual ao login
 
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "restaurante";
-
-$conn = new mysqli($host, $usuario, $senha, $banco);
-
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
 }
 
-// LÓGICA DE CADASTRO (Envia os campos obrigatórios ocultos para respeitar a estrutura do banco)
+$id_gestor = $_SESSION['usuario_id'];
+
+// LÓGICA DE CADASTRO
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionar_ingrediente'])) {
-    $nome_ingredientes = $conn->real_escape_string($_POST['nome_ingredientes']);
-    $custo_unitario = floatval($_POST['custo_unitario']);
-    
-    // Solução para as restrições NOT NULL: preenche o mínimo exigido pelo banco por trás dos panos
-    $qtd_produto = 0; 
-    $validade_padrao = '2000-01-01'; // Data padrão aceita pelo formato DATE do MySQL
-    $id_gestor_padrao = 1;           // Vincula ao Gestor Administrador padrão (ID 1)
+    $nome_ingredientes = trim($_POST['nome_ingredientes']);
+    $quantidade_atual  = intval($_POST['quantidade_atual']);
+    $quantidade_minima = intval($_POST['quantidade_minima']);
+    $quantidade_maxima = intval($_POST['quantidade_maxima']);
+    $custo_unitario    = floatval(str_replace(',', '.', $_POST['custo_unitario']));
 
-    // Query montada exatamente com a ordem e os tipos das colunas do seu banco
-    $sql = "INSERT INTO tb_estoque (nome_ingredientes, custo_unitario, qtd_produto, validade, id_gestor) 
-            VALUES ('$nome_ingredientes', $custo_unitario, $qtd_produto, '$validade_padrao', $id_gestor_padrao)";
-    
-    if ($conn->query($sql)) {
-        header("Location: estoque.php");
-        exit();
-    } else {
-        die("Erro ao salvar no banco: " . $conn->error);
-    }
-}
+    $stmt = $pdo->prepare("INSERT INTO tb_estoque (id_gestor, nome_ingredientes, quantidade_atual, quantidade_minima, quantidade_maxima, custo_unitario)
+                            VALUES (:id_gestor, :nome, :qatual, :qmin, :qmax, :custo)");
+    $stmt->execute([
+        ':id_gestor' => $id_gestor,
+        ':nome'      => $nome_ingredientes,
+        ':qatual'    => $quantidade_atual,
+        ':qmin'      => $quantidade_minima,
+        ':qmax'      => $quantidade_maxima,
+        ':custo'     => $custo_unitario,
+    ]);
 
-// LÓGICA DE EXCLUSÃO
-if (isset($_GET['excluir'])) {
-    $id_excluir = intval($_GET['excluir']);
-    $conn->query("DELETE FROM tb_estoque WHERE id_ingredientes = $id_excluir");
     header("Location: estoque.php");
     exit();
 }
 
-// BUSCA DOS INGREDIENTES PARA A LISTA DA DIREITA
-$sql_busca = "SELECT * FROM tb_estoque ORDER BY nome_ingredientes ASC";
-$resultado = $conn->query($sql_busca);
+// LÓGICA DE EXCLUSÃO (só permite excluir ingrediente do próprio gestor)
+if (isset($_GET['excluir'])) {
+    $id_excluir = intval($_GET['excluir']);
+
+    $stmt = $pdo->prepare("DELETE FROM tb_estoque WHERE id_ingrediente = :id AND id_gestor = :id_gestor");
+    $stmt->execute([
+        ':id'        => $id_excluir,
+        ':id_gestor' => $id_gestor,
+    ]);
+
+    header("Location: estoque.php");
+    exit();
+}
+
+// BUSCA SOMENTE dos ingredientes do gestor logado
+$stmt = $pdo->prepare("SELECT * FROM tb_estoque WHERE id_gestor = :id_gestor ORDER BY nome_ingredientes ASC");
+$stmt->execute([':id_gestor' => $id_gestor]);
+$resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -68,15 +74,15 @@ $resultado = $conn->query($sql_busca);
                 <span>RestControl</span>
             </div>
             <div class="top-actions">
-                <a href="../home/home.php" class="top-link"><i class="fa-solid fa-right-from-bracket"></i> Voltar</a>
+                <a href="../home/home.php" class="top-link"><i class="fa-solid fa-right-from-bracket"></i>← Voltar ao painel</a>
             </div>
         </header>
 
         <main class="main-content">
-            
+
             <section class="card-box form-section">
                 <h2><i class="fa-solid fa-circle-plus"></i> Registrar Ingrediente</h2>
-                
+
                 <form action="estoque.php" method="POST" id="formEstoque">
                     <div class="form-grid">
                         <div class="input-group">
@@ -85,8 +91,23 @@ $resultado = $conn->query($sql_busca);
                         </div>
 
                         <div class="input-group">
+                            <label for="quantidade_atual">Quantidade Atual</label>
+                            <input type="number" id="quantidade_atual" name="quantidade_atual" placeholder="Ex: 50" min="0" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="quantidade_minima">Quantidade Mínima</label>
+                            <input type="number" id="quantidade_minima" name="quantidade_minima" placeholder="Ex: 10" min="0" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="quantidade_maxima">Quantidade Máxima</label>
+                            <input type="number" id="quantidade_maxima" name="quantidade_maxima" placeholder="Ex: 100" min="0" required>
+                        </div>
+
+                        <div class="input-group">
                             <label for="custo_unitario">Custo Unitário (R$)</label>
-                            <input type="number" id="custo_unitario" name="custo_unitario" placeholder="Ex: 5.50" step="0.01" min="0" required>
+                            <input type="text" id="custo_unitario" name="custo_unitario" placeholder="Ex: 5,50" required>
                         </div>
                     </div>
 
@@ -99,19 +120,31 @@ $resultado = $conn->query($sql_busca);
             <section class="card-box list-section">
                 <h2><i class="fa-solid fa-boxes-stacked"></i> Ingredientes Cadastrados</h2>
                 <div class="func-list">
-                    <?php if ($resultado && $resultado->num_rows > 0): ?>
-                        <?php while($row = $resultado->fetch_assoc()): ?>
+                    <?php if ($resultado && count($resultado) > 0): ?>
+                        <?php foreach ($resultado as $row): ?>
+                            <?php $abaixo_minimo = $row['quantidade_atual'] <= $row['quantidade_minima']; ?>
                             <div class="func-item">
                                 <div class="func-info-basic">
                                     <div class="avatar"><i class="fa-solid fa-box"></i></div>
                                     <div>
                                         <h3><?php echo htmlspecialchars($row['nome_ingredientes']); ?></h3>
+                                        <p>
+                                            Estoque: <?php echo (int)$row['quantidade_atual']; ?>
+                                            (mín: <?php echo (int)$row['quantidade_minima']; ?> / máx: <?php echo (int)$row['quantidade_maxima']; ?>)
+                                            <?php if ($abaixo_minimo): ?>
+                                                <span style="color:#ef4444; font-weight:600;"> — repor!</span>
+                                            <?php endif; ?>
+                                        </p>
                                         <p>Custo Unitário: R$ <?php echo number_format($row['custo_unitario'], 2, ',', '.'); ?></p>
                                     </div>
                                 </div>
-                                <a href="verMaisE.php?id=<?php echo $row['id_ingredientes']; ?>" class="btn btn-secondary">Ver Mais</a>
+                                <a href="estoque.php?excluir=<?php echo $row['id_ingrediente']; ?>"
+                                   class="btn btn-danger"
+                                   onclick="return confirm('Remover \'<?php echo htmlspecialchars($row['nome_ingredientes']); ?>\' do estoque?')">
+                                   <i class="fa-solid fa-trash-can"></i>
+                                </a>
                             </div>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     <?php else: ?>
                         <p class="empty-msg">Nenhum ingrediente adicionado ao estoque.</p>
                     <?php endif; ?>

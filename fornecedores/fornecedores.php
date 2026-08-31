@@ -1,66 +1,59 @@
 <?php
-// Inicia a sessão para identificar o gestor logado
 session_start();
+require_once '../conexao.php'; // deve fornecer $pdo (PDO), igual ao login
 
-// Configurações de conexão com o banco de dados
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "restaurante";
-
-$conn = new mysqli($host, $usuario, $senha, $banco);
-
-// Verifica se houve erro na conexão
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
 }
 
-// Para testes locais, se não houver um gestor logado na sessão, define o ID 1 como padrão
-$id_gestor = isset($_SESSION['id_gestor']) ? intval($_SESSION['id_gestor']) : 1;
-
-// Garante que o gestor padrão existe no banco para evitar erros de Chave Estrangeira (FK)
-$check_gestor = $conn->query("SELECT id_gestor FROM tb_gestor WHERE id_gestor = $id_gestor");
-if ($check_gestor->num_rows == 0) {
-    $conn->query("INSERT INTO tb_gestor (id_gestor, CNPJ, CPF, nome_gestor, e_mail, senha)
-                VALUES ($id_gestor, '00000000000000', '00000000000', 'Gestor Administrador', 'admin@restcontrol.com', '123456')");
-}
+$id_gestor = $_SESSION['usuario_id']; // mesma chave usada no login_processa.php
 
 // PROCESSAMENTO DO FORMULÁRIO (CADASTRAR FORNECEDOR)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cadastrar'])) {
-    // Coleta e sanitiza os dados enviados pelo gestor
-    $nome_fornecedor     = $conn->real_escape_string($_POST['nome_fornecedor']);
-    $produto_fornecido   = $conn->real_escape_string($_POST['produto_fornecido']);
-    $qtd_total_produto   = intval($_POST['qtd_total_produto']);
-    $data_reabastecimento = $_POST['data_reabastecimento']; // Coleta apenas a data (AAAA-MM-DD)
+    $nome_fornecedor      = trim($_POST['nome_fornecedor']);
+    $produto_fornecido    = trim($_POST['produto_fornecido']);
+    $qtd_total_produto    = intval($_POST['qtd_total_produto']);
+    $data_reabastecimento = $_POST['data_reabastecimento'];
 
-    // Insere os dados incluindo a data selecionada manualmente pelo gestor
     $sql_insert = "INSERT INTO tb_fornecedores (id_gestor, nome_fornecedor, produto_fornecido, qtd_total_produto, data_reabastecimento)
-                VALUES ($id_gestor, '$nome_fornecedor', '$produto_fornecido', $qtd_total_produto, '$data_reabastecimento')";
+                   VALUES (:id_gestor, :nome, :produto, :qtd, :data)";
+    $stmt = $pdo->prepare($sql_insert);
+    $ok = $stmt->execute([
+        ':id_gestor' => $id_gestor,
+        ':nome'      => $nome_fornecedor,
+        ':produto'   => $produto_fornecido,
+        ':qtd'       => $qtd_total_produto,
+        ':data'      => $data_reabastecimento,
+    ]);
 
-    if ($conn->query($sql_insert) === TRUE) {
+    if ($ok) {
         header("Location: fornecedores.php");
         exit();
     } else {
-        echo "<script>alert('Erro ao cadastrar: " . $conn->error . "');</script>";
+        echo "<script>alert('Erro ao cadastrar fornecedor.');</script>";
     }
 }
 
 // PROCESSAMENTO DE EXCLUSÃO
 if (isset($_GET['excluir'])) {
     $id_excluir = intval($_GET['excluir']);
-    $sql_delete = "DELETE FROM tb_fornecedores WHERE id_fornecedor = $id_excluir AND id_gestor = $id_gestor";
 
-    if ($conn->query($sql_delete) === TRUE) {
-        header("Location: fornecedores.php");
-        exit();
-    } else {
-        echo "<script>alert('Erro ao excluir: " . $conn->error . "');</script>";
-    }
+    $stmt = $pdo->prepare("DELETE FROM tb_fornecedores WHERE id_fornecedor = :id AND id_gestor = :id_gestor");
+    $stmt->execute([
+        ':id'        => $id_excluir,
+        ':id_gestor' => $id_gestor,
+    ]);
+
+    header("Location: fornecedores.php");
+    exit();
 }
 
-// Busca os registros para exibição na lista
-$sql_select = "SELECT * FROM tb_fornecedores WHERE id_gestor = $id_gestor ORDER BY id_fornecedor DESC";
-$resultado = $conn->query($sql_select);
+// Busca os registros SOMENTE do gestor logado
+$stmt = $pdo->prepare("SELECT * FROM tb_fornecedores WHERE id_gestor = :id_gestor ORDER BY id_fornecedor DESC");
+$stmt->execute([':id_gestor' => $id_gestor]);
+$resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -121,8 +114,8 @@ $resultado = $conn->query($sql_select);
         <section class="card-box list-section">
             <h2><i class="fa-solid fa-boxes-stacked"></i> Fornecedores Ativos</h2>
             <div class="func-list">
-                <?php if ($resultado && $resultado->num_rows > 0): ?>
-                    <?php while($row = $resultado->fetch_assoc()): ?>
+                <?php if ($resultado && count($resultado) > 0): ?>
+                    <?php foreach ($resultado as $row): ?>
                         <div class="func-item">
                             <div class="func-info-basic">
                                 <div class="avatar"><i class="fa-solid fa-building"></i></div>
@@ -133,7 +126,7 @@ $resultado = $conn->query($sql_select);
                             </div>
                             <a href="verMaisF.php?id=<?php echo $row['id_fornecedor']; ?>" class="btn btn-secondary">Ver Mais</a>
                         </div>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <p class="empty-msg">Nenhum fornecedor registrado no sistema.</p>
                 <?php endif; ?>

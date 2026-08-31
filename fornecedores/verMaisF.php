@@ -1,16 +1,14 @@
 <?php
 session_start();
+require_once '../conexao.php'; // deve fornecer $pdo (PDO), igual ao login
 
-$host = "localhost";
-$usuario = "root";
-$senha = "";
-$banco = "restaurante";
-
-$conn = new mysqli($host, $usuario, $senha, $banco);
-
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// Bloqueia acesso de quem não está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../pag_login/index.php");
+    exit();
 }
+
+$id_gestor = $_SESSION['usuario_id']; // mesma chave usada no login_processa.php
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: fornecedores.php");
@@ -18,15 +16,16 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 }
 
 $id_fornecedor = intval($_GET['id']);
-$id_gestor = isset($_SESSION['id_gestor']) ? intval($_SESSION['id_gestor']) : 1;
 
-// Busca os dados filtrando pelo ID selecionado
-$sql = "SELECT * FROM tb_fornecedores WHERE id_fornecedor = $id_fornecedor AND id_gestor = $id_gestor";
-$resultado = $conn->query($sql);
+// Busca os dados filtrando pelo ID selecionado E pelo gestor logado
+$stmt = $pdo->prepare("SELECT * FROM tb_fornecedores WHERE id_fornecedor = :id AND id_gestor = :id_gestor");
+$stmt->execute([
+    ':id'        => $id_fornecedor,
+    ':id_gestor' => $id_gestor,
+]);
+$fornecedor = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($resultado && $resultado->num_rows > 0) {
-    $fornecedor = $resultado->fetch_assoc();
-} else {
+if (!$fornecedor) {
     header("Location: fornecedores.php");
     exit();
 }
