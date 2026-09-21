@@ -62,7 +62,7 @@ function processarUploadImagem($UPLOAD_DIR, $EXTENSOES_PERMITIDAS, $TAMANHO_MAXI
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salvar_prato'])) {
     $nome_prato  = trim($_POST['nome_prato']);
     $preco_venda = floatval(str_replace(',', '.', $_POST['preco_venda']));
-    $id_prato_edicao = isset($_POST['id_prato']) ? intval($_POST['id_prato']) : 0;
+    $id_prato_edicao = isset($_POST['id_prato']) && $_POST['id_prato'] !== '' ? intval($_POST['id_prato']) : 0;
 
     $nome_imagem = processarUploadImagem($UPLOAD_DIR, $EXTENSOES_PERMITIDAS, $TAMANHO_MAXIMO, $erro);
 
@@ -126,11 +126,14 @@ if (isset($_GET['excluir'])) {
         if (!empty($prato['imagem']) && file_exists($UPLOAD_DIR . $prato['imagem'])) {
             @unlink($UPLOAD_DIR . $prato['imagem']);
         }
-        // Remove também os itens de ficha técnica ligados a esse prato
-        // (garante limpeza mesmo se a FK em cascata do sql/alteracoes_pratos_ficha.sql
-        // ainda não tiver sido aplicada no banco)
-        $stmt = $pdo->prepare("DELETE FROM tb_item_ficha_tecnica WHERE id_prato = :id");
-        $stmt->execute([':id' => $id_excluir]);
+
+        // Limpa itens de ficha técnica se existir essa tabela
+        try {
+            $stmt = $pdo->prepare("DELETE FROM tb_item_ficha_tecnica WHERE id_prato = :id");
+            $stmt->execute([':id' => $id_excluir]);
+        } catch (Exception $e) {
+            // Caso a tabela não exista ainda, ignora o erro
+        }
 
         $stmt = $pdo->prepare("DELETE FROM tb_pratos WHERE id_prato = :id AND id_gestor = :id_gestor");
         $stmt->execute([':id' => $id_excluir, ':id_gestor' => $id_gestor]);
@@ -140,7 +143,7 @@ if (isset($_GET['excluir'])) {
     exit();
 }
 
-// LÓGICA 3: Buscar Pratos Ativos do Gestor
+// LÓGICA 3: Buscar Pratos Ativos do Gestor Logado
 $stmt = $pdo->prepare("SELECT id_prato, nome_prato, imagem, preco_venda FROM tb_pratos WHERE id_gestor = :id_gestor ORDER BY id_prato DESC");
 $stmt->execute([':id_gestor' => $id_gestor]);
 $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -162,7 +165,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="brand">
             <span>RestControl</span>
         </div>
-        <a href="../home/home.php" class="top-link"><i class="fa-solid fa-arrow-left"></i>Voltar ao painel</a>
+        <a href="../home/home.php" class="top-link"><i class="fa-solid fa-arrow-left"></i> Voltar ao painel</a>
     </header>
 
     <div class="container-dashboard">
@@ -199,7 +202,7 @@ $pratos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </button>
                             <a href="pratos.php?excluir=<?php echo $prato['id_prato']; ?>"
                                class="btn btn-danger"
-                               onclick="return confirm('Excluir o prato \'<?php echo htmlspecialchars($prato['nome_prato'], ENT_QUOTES); ?>\'? Isso também apaga a ficha técnica dele.')">
+                               onclick="return confirm('Excluir o prato \'<?php echo htmlspecialchars($prato['nome_prato'], ENT_QUOTES); ?>\'?')">
                                 <i class="fa-solid fa-trash-can"></i> Excluir
                             </a>
                         </div>

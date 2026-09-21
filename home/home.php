@@ -76,9 +76,19 @@ $nome_gestor = htmlspecialchars($_SESSION['usuario_nome']);
                     <h3>Cálculos</h3>
                 </a>
 
-                <a href="#" class="mod-card">
+                <a href="../mesas/mesas.php" class="mod-card">
+                    <div class="icon-box"><i class="fa-solid fa-chair"></i></div>
+                    <h3>Mesas</h3>
+                </a>
+
+                <a href="../pedidos/pedidos.php" class="mod-card">
                     <div class="icon-box"><i class="fa-solid fa-receipt"></i></div>
                     <h3>Pedidos</h3>
+                </a>
+
+                <a href="../cardapio_digital/qrcode.php" class="mod-card">
+                    <div class="icon-box"><i class="fa-solid fa-qrcode"></i></div>
+                    <h3>Cardápio Digital</h3>
                 </a>
 
                 <a href="../layout/layout.php" class="mod-card">

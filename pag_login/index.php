@@ -41,12 +41,6 @@
                         </div>
                     </div>
 
-                    <div class="form-options funcionario-check-row">
-                        <label class="checkbox-funcionario">
-                            <input type="checkbox" name="funcionario" id="chkFuncionario" value="1">
-                            Sou funcionário
-                        </label>
-                    </div>
 
                 
                     <div class="form-options">
